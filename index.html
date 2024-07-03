@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Elliptic Curve Visualizer</title>
+  <meta charset="UTF-8"/>
+
+  <script src="libs/pubsub.js"></script>
+  <script src="libs/jquery.min.js"></script>
+  <script src="libs/Base58.js"></script>
+  <script src="libs/base64js.min.js"></script>
+  <script src="libs/elliptic.browserify.js"></script>
+  <script src="libs/jssha3.min.js"></script>
+  <script src="libs/buffer.min.js"></script>
+  <script src="libs/bitcoinjs.min.js"></script>
+  <script src="libs/wif.min.js"></script>
+  <script src="libs/qrcode.min.js"></script>
+
+  <link id="PageSkin" rel="stylesheet" type="text/css" href="skins/plain.css"/>
+  <script src="skins/skins.js"></script>
+  <script src="languages/labels.js"></script>
+  <script src="languages/english.js"></script>
+</head>
+
+<body>
+
+<!-- ====================================================================== -->
+<div id=PaperWallet>
+<table width=100%>
+<tr>
+  <td align=left>
+    <button id=BackButton onclick="PubSub.publish('BackToMain')"></button>
+  </td>
+</tr>
+
+<tr>
+  <td class="label" align=center valign=top width=100%>
+    <div id="BTCAddressLabel"></div>
+  </td>
+</tr>
+<tr>
+  <td align=center bgcolor=white height=425>
+    <span id="BTCAddressArea"></span>
+  </td>
+</tr>
+<tr>
+  <td><hr/></td>
+</tr>
+<tr>
+  <td class="label" align=center valign=top width=100%>
+    <div id="BTCWIFLabel"></div>
+  </td>
+</tr>
+
+<tr>
+  <td align=center bgcolor=white height=425>
+    <span id="BTCWIFArea"></span>
+  </td>
+</tr>
+<tr>
+  <td class=units style="font-size: x-small;"
+      align=center valign=center width=100%>
+    <div id="EncodedWIFWarning"></div>
+  </td>
+</tr>
+</table>
+</div>
+<!-- ====================================================================== -->
+
+<div id=Main>
+<div id=KeysDiv>
+<table>
+<tr>
+  <td class=label align=right>
+    <div id="CurveLabel"></div>
+  </td>
+  <td class="blacktext">secp256k1</td>
+</tr>
+<tr>
+  <td>&nbsp;</td>
+</tr>
+
+<tr>
+  <td class=label align=right valign=top>
+    <div id=PKEncodingLabel></div>
+  </td>
+  <td>
+    <input type=radio id=tonotencode name=PKEncodeChoice checked
+      onclick="PubSub.publish('tonotencodechosen')">
+    <label for=tonotencode>Unencoded / Raw</label><br>
+    <input type=radio id=toencode name=PKEncodeChoice
+      onclick="PubSub.publish('toencodechosen')">
+    <label for=toencode>Encoded (Base256+)</label>
+  </td>
+</tr>
+
+<tr>
+  <td class=label align=right valign=top>
+    <div id=PKChoiceLabel></div>
+  </td>
+  <td>
+    <input type=radio id=hexchoice name=PKInputChoice checked
+      onclick="PubSub.publish('hexchosen')">
+    <label for=hexchoice>Hexadecimal [0123456789abcdef]</label><br>
+    <input type=radio id=b58choice name=PKInputChoice
+      onclick="PubSub.publish('b58chosen')">
+    <label for=b58choice>Base58</label><br>
+    <input type=radio id=b64choice name=PKInputChoice
+      onclick="PubSub.publish('b64chosen')">
+    <label for=b64choice>Base64</label><br>
+    <input type=radio id=uint8arraychoice name=PKInputChoice
+      onclick="PubSub.publish('uint8arraychosen')">
+    <label for=uint8arraychoice>List of Numbers 000-255</label><br>
+    <input type=radio id=wifchoice name=PKInputChoice
+      onclick="PubSub.publish('wifchosen')">
+    <label for=wifchoice>Bitcoin Wallet Import Format (WIF)</label>
+  </td>
+</tr>
+
+<tr>
+  <td/>
+  <td>
+    <div id=PrivateKeyHexData>
+      <input id=PrivateKeyHexField class=redtext
+             type=text size=64 maxlength=64 />&nbsp;
+             <span class=units>(64 hexchars = 32 bytes)</span>
+    </div>
+    <div id=PrivateKeyB58Data>
+      <input id=PrivateKeyB58Field class=redtext
+             type=text size=45 maxlength=45 />&nbsp;
+             <span class=units>(Base58 chars)</span>
+    </div>
+    <div id=PrivateKeyB64Data>
+      <input id=PrivateKeyB64Field class=redtext
+             type=text size=44 maxlength=44 />&nbsp;
+             <span class=units>(Base64 chars)</span>
+    </div>
+    <div id=PrivateKeyIntArrayField>
+      <table>
+        <tr>
+          <td><input class=redtext id=pk0 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk1 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk2 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk3 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk4 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk5 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk6 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk7 type=text size=3 maxlength=3 /></td>
+        </tr>
+        <tr>
+          <td><input class=redtext id=pk8 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk9 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk10 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk11 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk12 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk13 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk14 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk15 type=text size=3 maxlength=3 /></td>
+        </tr>
+        <tr>
+          <td><input class=redtext id=pk16 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk17 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk18 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk19 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk20 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk21 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk22 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk23 type=text size=3 maxlength=3 /></td>
+        </tr>
+        <tr>
+          <td><input class=redtext id=pk24 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk25 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk26 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk27 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk28 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk29 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk30 type=text size=3 maxlength=3 /></td>
+          <td><input class=redtext id=pk31 type=text size=3 maxlength=3 /></td>
+        </tr>
+      </table>
+    </div>
+    <div id=PrivateKeyWIFData>
+      <input id=PrivateKeyWIFField class=redtext
+             type=text size=53 maxlength=53 />&nbsp;
+      <img src=images/paperwallet.svg width=25 height=25
+           style='vertical-align:top;'
+           onclick="PubSub.publish('ShowPaperWallet')" />
+      <span class=units>(WIF chars)</span>
+    </div>
+  </td>
+</tr>
+<tr>
+  <td/>
+  <td>
+    <input type=image src=images/downarrow.svg width=50 height=50
+           onclick="PubSub.publish('PrivateKeyChanged')" />&nbsp;
+    <input type=image src=images/randomgen.svg width=50 height=50
+           onclick="PubSub.publish('RandomPrivKey')" />
+  </td>
+</tr>
+<tr>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td class="label" align=right>
+    <div id="PublicKeyLabel"></div>
+  </td>
+  <td>
+    <textarea id="PublicKeyVal" class=blat rows=2 cols=64 readonly></textarea>
+  </td>
+  <td class=units>(128 chars, 64 bytes)</td>
+</tr>
+<tr>
+  <td class="label" align=right>
+    <div id="CompPublicKeyLabel"></div>
+  </td>
+  <td>
+    <input id="CompPublicKeyVal"
+      class=blat type=text size=66 maxlength=66 readonly>
+    </input>
+  </td>
+  <td class=units>(66 chars, 33 bytes)</td>
+</tr>
+<tr>
+  <td class="label" align=right>
+    <div id="EthAddrLabel"></div>
+  </td>
+  <td>
+    <input id="EthAddrField"
+           class=blat type=text size=42 maxlength=42 readonly></textarea>
+  </td>
+  <td class=units>(40 chars, 20 bytes)</td>
+</tr>
+<tr>
+  <td class="label" align=right>
+    <div id="BTCAddrLabel"></div>
+  </td>
+  <td>
+    <input id="BTCAddrField"
+           class=blat type=text size=42 maxlength=42 readonly></textarea>
+  </td>
+  <td class=units></td>
+</tr>
+
+<tr>
+  <td/>
+  <td>
+    <input type=image src=images/uparrow.svg width=50 height=50
+           onclick="PubSub.publish('PublicKeyChanged',null)" />&nbsp;
+    <input type=image src=images/notice.svg width=50 height=50
+           onclick="PubSub.publish('NoticeClicked')" />
+  </td>
+</tr>
+<tr>
+  <td class="label" align=right>
+    <div id="PubKeyXLabel"></div>
+  </td>
+  <td>
+    <input id="PubKeyXField" class=blacktext type=text size=64 maxlength=64 />
+  </td>
+  <td class=units>(64 chars, 32 bytes)</td>
+</tr>
+<tr>
+  <td class="label" align=right>
+    <div id="PubKeyYLabel"></div>
+  </td>
+  <td>
+    <input id="PubKeyYField" class=blacktext type=text size=64 maxlength=64 />
+  </td>
+  <td class=units>(64 chars, 32 bytes)</td>
+</tr>
+<tr>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td colspan=3>
+    <canvas id=xyplot width=900 height=900></canvas>
+  </td>
+</tr>
+</table>
+</div>
+</div>
+
+<script type="text/javascript">
+  LABELS.setLabels()
+  SKINS.setSkin( "plain" )
+
+  $( "#PrivateKeyHexData" ).show()
+  $( "#hexchoice" ).prop( 'checked', true )
+  $( "#PrivateKeyB58Data" ).hide()
+  $( "#PrivateKeyB64Data" ).hide()
+  $( "#PrivateKeyWIFData" ).hide()
+  $( "#PrivateKeyIntArrayField" ).hide()
+
+  const EC = require('elliptic').ec
+  const sha3 = require( 'js-sha3' )
+  const ec = new EC('secp256k1')
+  const Buffer = require( 'buffer' ).Buffer
+  const wif = require( 'wif' )
+
+  var encodeprivkey = false
+
+  var canvas = $("#xyplot")[0]
+  var contxt = canvas.getContext('2d');
+  contxt.fillStyle = 'darkgreen'
+
+  function hexToBytes(hex) {
+    let bytes = [];
+    for (let c = 0; c < hex.length; c += 2)
+      bytes.push(parseInt(hex.substr(c, 2), 16));
+    return bytes;
+  }
+
+  function bytesToHex(bytes) {
+    let hex = [];
+    for (let i = 0; i < bytes.length; i++) {
+      let current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+      hex.push((current >>> 4).toString(16));
+      hex.push((current & 0xF).toString(16));
+    }
+    return hex.join("");
+  }
+
+  function setPKIntArray( uint8arr ) {
+    uint8arr.forEach( (item, ix, arr) => {
+      let nm = '#pk' + ix
+      let vl = '' + parseInt( arr[ix] )
+      while (vl.length < 3)
+        vl = '0' + vl
+      $( nm ).val( vl )
+    } )
+  }
+
+  function validatePKIntArray() {
+    let result = true
+
+    for(var ii = 0; ii < 32; ii++) {
+      let nm = '#pk' + ii
+      let vl = parseInt( $(nm).val() )
+
+      if ( /\d{3}/.test($(nm).val()) && vl < 256 ) {
+        $(nm).removeClass('highlighted')
+      } else {
+        $(nm).addClass('highlighted')
+        result = false
+      }
+    }
+
+    return result
+  }
+
+  function setUncompPubkey( uncomppubkey ) {
+    let x = uncomppubkey.getX().toString('hex')
+    while (x.length < 64) x = '0' + x
+    let y = uncomppubkey.getY().toString('hex')
+    while (y.length < 64) y = '0' + y
+
+    $("#PubKeyXField").val( x )
+    $("#PubKeyYField").val( y )
+    $("#PublicKeyVal").val( uncomppubkey.encode('hex').substring(2) )
+  }
+
+  function setCompPubkey( comppub ) {
+    $("#CompPublicKeyVal").val( comppub )
+  }
+
+  function setEthAddr( pubkey ) {
+    let keyhex = pubkey.encode('hex').substring(2)
+    let keybytes = hexToBytes( keyhex )
+    let hash = sha3.keccak256( keybytes )
+    let ethaddr = hash.substring(24) // last twenty bytes two chars per byte
+    $("#EthAddrField").val( '0x' + ethaddr )
+  }
+
+  function setBtcAddr( comppubkeyhex ) {
+    let pubbuff = Buffer.from( comppubkeyhex, 'hex' )
+    let { address } =
+        bitcoinjs.payments.p2pkh( { pubkey: pubbuff,
+                                    network: bitcoinjs.networks.bitcoin } )
+    $( "#BTCAddrField" ).val( address )
+  }
+
+  function setPrivateKeys( ecpvkey ) {
+    let ashex = ecpvkey.getPrivate('hex')
+    let asarr = hexToBytes(ashex)
+
+    $("#PrivateKeyHexField").val( bytesToHex(asarr) )
+    $("#PrivateKeyB58Field").val( Base58.encode(asarr) )
+    $("#PrivateKeyB64Field").val( base64js.fromByteArray(asarr) )
+
+    let pkbuff = Buffer.from(ashex,'hex')
+    let aswif = wif.encode( {version:128, privateKey:pkbuff, compressed:true} )
+    $("#PrivateKeyWIFField").val( aswif )
+
+    setPKIntArray( asarr )
+  }
+
+  function setPublicKeys( ecpvkey ) {
+    let uncomppub = ecpvkey.getPublic()
+    setUncompPubkey( uncomppub )
+    setEthAddr( uncomppub )
+    plot( uncomppub )
+ 
+    let compressedpubkey = ecpvkey.getPublic( true, 'hex' )
+    setCompPubkey( compressedpubkey )
+    setBtcAddr( compressedpubkey )
+  }
+
+  const DMAX = parseInt('0xffffff') // only need first 3 bytes to compute ratio
+  function plot( point ) {
+    let xcoord = parseInt('0x' + point.getX().toString('hex').substring(0,6))
+    let ycoord = parseInt('0x' + point.getY().toString('hex').substring(0,6))
+
+    let x = parseInt( Number(xcoord / DMAX) * canvas.width )
+    // y is inverted for screen coordinates
+    let y = canvas.height - parseInt( Number(ycoord / DMAX) * canvas.height )
+
+    if (x <= canvas.width && y > 0) {
+      contxt.beginPath()
+      contxt.arc( x, y, 5, 0, 2 * Math.PI )
+      contxt.fill()
+      contxt.closePath()
+    }
+  }
+
+  function getPrivKeyBytes() {
+    let result = []
+    if ( $("#hexchoice").prop("checked") ) {
+      result = hexToBytes( $("#PrivateKeyHexField").val() )
+    }
+    if ( $("#b58choice").prop("checked") ) {
+      result = Base58.decode( $("#PrivateKeyB58Field").val() )
+    }
+    if ( $("#b64choice").prop("checked") ) {
+      result = base64js.toByteArray( $("#PrivateKeyB64Field").val() )
+    }
+    if ( $("#uint8arraychoice").prop("checked") ) {
+      for( let ii = 0; ii < 32; ii++ ) {
+        let nm = '#pk' + ii
+        result.push( 0xFF & parseInt($(nm).val()) )
+      }
+    }
+    if ( $("#wifchoice").prop("checked") ) {
+      result = wif.decode( $("#PrivateKeyWIFField").val() ).privateKey
+    }
+    return result
+  }
+
+  PubSub.subscribe( "toencodechosen", () => {
+    encodeprivkey = true
+
+    let unencoded = getPrivKeyBytes()
+    if (unencoded.length != 32) {
+      alert( 'bad key' )
+      return
+    }
+
+    let encoded = []
+    unencoded.forEach( (bt, ix, arr) => {
+      encoded.push( 0xFF & ((arr[ix] == 0xFF) ? 0 : (arr[ix] + 1)) )
+    } )
+
+    let ecenc = ec.keyFromPrivate( encoded )
+    setPrivateKeys( ecenc )
+    let ecunenc = ec.keyFromPrivate( unencoded )
+    setPublicKeys( ecunenc )
+
+    $( "#PrivateKeyHexField" ).removeClass("redtext")
+    $( "#PrivateKeyHexField" ).addClass("encodedredtext")
+
+    $( "#PrivateKeyB58Field" ).removeClass("redtext")
+    $( "#PrivateKeyB58Field" ).addClass("encodedredtext")
+
+    $( "#PrivateKeyB64Field" ).removeClass("redtext")
+    $( "#PrivateKeyB64Field" ).addClass("encodedredtext")
+
+    for(var ii = 0; ii < 32; ii++) {
+      let nm = '#pk' + ii
+      $(nm).removeClass('redtext')
+      $(nm).addClass('encodedredtext')
+    }
+  } )
+
+  PubSub.subscribe( "tonotencodechosen", () => {
+    encodeprivkey = false
+
+    let encoded = getPrivKeyBytes()
+    if (encoded.length != 32) {
+      alert( 'bad key' )
+      return
+    }
+
+    let unencoded = []
+    encoded.forEach( (bt, ix, arr) => {
+      unencoded.push( 0xFF & ((arr[ix] == 0x00) ? 0xFF : (arr[ix] - 1)) )
+    } )
+
+    let ecunenc = ec.keyFromPrivate( unencoded )
+    setPrivateKeys( ecunenc )
+    let ecenc = ec.keyFromPrivate( encoded )
+    setPublicKeys( ecunenc )
+
+    $( "#PrivateKeyHexField" ).removeClass("encodedredtext")
+    $( "#PrivateKeyHexField" ).addClass("redtext")
+
+    $( "#PrivateKeyB58Field" ).removeClass("encodedredtext")
+    $( "#PrivateKeyB58Field" ).addClass("redtext")
+
+    $( "#PrivateKeyB64Field" ).removeClass("encodedredtext")
+    $( "#PrivateKeyB64Field" ).addClass("redtext")
+
+    for(var ii = 0; ii < 32; ii++) {
+      let nm = '#pk' + ii
+      $(nm).removeClass('encodedredtext')
+      $(nm).addClass('redtext')
+    }
+  } )
+
+  PubSub.subscribe( "hexchosen", () => {
+    $( "#PrivateKeyIntArrayField" ).hide()
+    $( "#PrivateKeyB58Data" ).hide()
+    $( "#PrivateKeyB64Data" ).hide()
+    $( "#PrivateKeyWIFData" ).hide()
+    $( "#PrivateKeyHexData" ).show()
+  } )
+
+  PubSub.subscribe( "b58chosen", () => {
+    $( "#PrivateKeyIntArrayField" ).hide()
+    $( "#PrivateKeyB64Data" ).hide()
+    $( "#PrivateKeyHexData" ).hide()
+    $( "#PrivateKeyWIFData" ).hide()
+    $( "#PrivateKeyB58Data" ).show()
+  } )
+
+  PubSub.subscribe( "b64chosen", () => {
+    $( "#PrivateKeyIntArrayField" ).hide()
+    $( "#PrivateKeyB58Data" ).hide()
+    $( "#PrivateKeyHexData" ).hide()
+    $( "#PrivateKeyWIFData" ).hide()
+    $( "#PrivateKeyB64Data" ).show()
+  } )
+
+  PubSub.subscribe( "uint8arraychosen", () => {
+    $( "#PrivateKeyHexData" ).hide()
+    $( "#PrivateKeyB58Data" ).hide()
+    $( "#PrivateKeyB64Data" ).hide()
+    $( "#PrivateKeyWIFData" ).hide()
+    $( "#PrivateKeyIntArrayField" ).show()
+  } )
+
+  PubSub.subscribe( "wifchosen", () => {
+    $( "#PrivateKeyHexData" ).hide()
+    $( "#PrivateKeyB58Data" ).hide()
+    $( "#PrivateKeyB64Data" ).hide()
+    $( "#PrivateKeyIntArrayField" ).hide()
+    $( "#PrivateKeyWIFData" ).show()
+  } )
+
+  PubSub.subscribe( "PrivateKeyChanged", () => {
+    if ( $("#hexchoice").prop("checked") )
+      PubSub.publish( "PrivateKeyHexChanged" )
+
+    if ( $("#b58choice").prop("checked") )
+      PubSub.publish( "PrivateKeyB58Changed" )
+
+    if ( $("#b64choice").prop("checked") )
+      PubSub.publish( "PrivateKeyB64Changed" )
+
+    if ( $("#uint8arraychoice").prop("checked") )
+      PubSub.publish( "PrivateKeyIntArrayChanged" )
+
+    if ( $("#wifchoice").prop("checked") )
+      PubSub.publish( "PrivateKeyWIFChanged" )
+  } )
+
+  PubSub.subscribe( "PrivateKeyHexChanged", () => {
+    let pvk = $("#PrivateKeyHexField").val()
+
+    if (64 != pvk.length) {
+      alert( 'ERROR: ' + pvk.length + ' < 64 chars' )
+      return
+    }
+
+    if (encodeprivkey) {
+      let asbytes = hexToBytes( pvk )
+      let decoded = []
+
+      asbytes.forEach( (bt, ix, arr) => {
+        decoded.push( 0xFF & ((arr[ix] == 0) ? 0xFF : (arr[ix] - 1)) )
+      } )
+
+      pvk = bytesToHex( decoded )
+    }
+
+    let key = ec.keyFromPrivate( pvk, 'hex' )
+    setPrivateKeys( key )
+    setPublicKeys( key )
+  } )
+
+  PubSub.subscribe( "PrivateKeyB58Changed", () => {
+    let pvk = $("#PrivateKeyB58Field").val()
+
+    let pvb = Base58.decode( pvk )
+    if (32 != pvb.length) {
+      alert( 'ERROR: key is ' + pvb.length + ' bytes, should be 32' )
+      return
+    }
+
+    if (encodeprivkey) {
+      pvb.forEach( (bt, ix, arr) => {
+        arr[ix] = 0xFF & (arr[ix] == 0) ? 0xFF : (arr[ix] - 1)
+      } )
+    }
+
+    let eckey = ec.keyFromPrivate( pvb )
+    setPrivateKeys( eckey )
+    setPublicKeys( eckey )
+  } )
+
+  PubSub.subscribe( "PrivateKeyB64Changed", () => {
+    let pvk = $("#PrivateKeyB64Field").val()
+    let pvb = base64js.toByteArray( pvk )
+
+    if (32 != pvb.length) {
+      alert( 'ERROR: key is ' + pvb.length + ' bytes, should be 32' )
+      return
+    }
+
+    if (encodeprivkey) {
+      pvb.forEach( (bt, ix, arr) => {
+        arr[ix] = 0xFF & (arr[ix] == 0) ? 0xFF : (arr[ix] - 1)
+      } )
+    }
+
+    let eckey = ec.keyFromPrivate( pvb )
+    setPrivateKeys( eckey )
+    setPublicKeys( eckey )
+  } )
+
+  PubSub.subscribe( "PrivateKeyIntArrayChanged", () => {
+    if (!validatePKIntArray())
+      return
+
+    let buff = new Uint8Array(32)
+    for( let ii = 0; ii < buff.length; ii++ ) {
+      buff[ii] = parseInt( $("#pk" + ii).val() )
+      if (encodeprivkey)
+        buff[ii] = (buff[ii] == 0) ? 255 : buff[ii] - 1
+    }
+
+    let key = ec.keyFromPrivate( buff )
+    setPrivateKeys( key )
+    setPublicKeys( key )
+  } )
+
+  PubSub.subscribe( "PrivateKeyWIFChanged", () => {
+    let pvk = $("#PrivateKeyWIFField").val()
+    let pvb = wif.decode( pvk ).privateKey
+
+    if (32 != pvb.length) {
+      alert( 'ERROR: key is ' + pvb.length + ' bytes, should be 32' )
+      return
+    }
+
+    if (encodeprivkey) {
+      pvb.forEach( (bt, ix, arr) => {
+        arr[ix] = 0xFF & (arr[ix] == 0) ? 0xFF : (arr[ix] - 1)
+      } )
+    }
+
+    let eckey = ec.keyFromPrivate( pvb )
+    setPrivateKeys( eckey )
+  } )
+
+  PubSub.subscribe( "RandomPrivKey", () => {
+    let buff = new Uint8Array(32);
+    crypto.getRandomValues(buff);
+    let key = ec.keyFromPrivate( buff )
+    setPrivateKeys( key )
+    setPublicKeys( key )
+  } )
+
+  PubSub.subscribe( "PublicKeyChanged", () => {
+    let xval = $("#PubKeyXField").val()
+    let yval = $("#PubKeyYField").val()
+
+    if (    64 == xval.length
+         && 64 == yval.length ) {
+      let pubobj = { x: xval, y: yval }
+      let key = ec.keyFromPublic( pubobj, 'hex' )
+      let vobj = key.validate()
+      if (vobj.result) {
+        setPubkey( key.getPublic() )
+        plot( key.getPublic() )
+      }
+      else {
+        alert( vobj.reason )
+      }
+
+      $("#PrivateKeyHexField").val("")
+    }
+    else {
+      if (xval.length < 64)
+        alert( 'ERROR: x length ' + xval.length + ' < 64 chars' )
+      if (yval.length < 64)
+        alert( 'ERROR: y length ' + yval.length + ' < 64 chars' )
+    }
+  } )
+
+  PubSub.subscribe( "NoticeClicked", () => {
+    alert( STRINGS[LANG].Notice )
+  } )
+
+  PubSub.subscribe( "ShowPaperWallet", () => {
+    $( "#Main" ).hide()
+    $( "#PaperWallet" ).show()
+
+    $( "#BTCAddressArea" ).empty()
+    $( "#BTCWIFArea" ).empty()
+
+    let addr = $( "#BTCAddrField" ).val()
+    let wif = $( "#PrivateKeyWIFField" ).val()
+
+    if (    !addr || addr.length == 0
+         || !wif || wif.length == 0 ) {
+      PubSub.publish( 'BackToMain' )
+      return
+    }
+
+    let addrqr = new QRCode( "BTCAddressArea", {
+      text: addr,
+      width: 350, height: 350,
+      colorDark: "#009900",
+      colorLight: "#FFFFFF",
+      correctLevel: QRCode.CorrectLevel.H
+    } )
+
+    let wifqr = new QRCode( "BTCWIFArea", {
+      text: wif,
+      width: 350, height: 350,
+      colorDark: "#990000",
+      colorLight: "#FFFFFF",
+      correctLevel: QRCode.CorrectLevel.H
+    } )
+
+  } )
+
+  PubSub.subscribe( 'BackToMain', () => {
+    $( "#PaperWallet" ).hide()
+    $( "#Main" ).show()
+  } )
+
+  PubSub.publish( "hexchosen" )
+  PubSub.publish( "BackToMain" )
+</script>
+
+</body>
+</html>

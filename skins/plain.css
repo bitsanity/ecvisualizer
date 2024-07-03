@@ -1,0 +1,71 @@
+body {
+  background-color: white;
+}
+
+table {
+  border-spacing: 3px;
+}
+
+td {
+  padding: 3px;
+}
+
+canvas {
+  background-color:white;
+  border: black 3px solid;
+}
+
+hr {
+  border: 1px dashed black;
+  border-style: none none dashed;
+}
+
+.blat {
+  font-family: monospace;
+  color : black;
+  background: lightgrey;
+}
+
+.label {
+  font-weight: bold;
+  color: darkblue;
+}
+
+.redtext {
+  font-family: monospace;
+  color: red;
+}
+
+.blacktext {
+  font-family: monospace;
+  color: black;
+}
+
+.encodedredtext {
+  font-family: monospace;
+  color: purple;
+}
+
+.units {
+  font-style: italic;
+}
+
+.highlighted {
+  background-color: yellow;
+}
+
+.okbutton {
+  font-weight: bold;
+  color : green;
+}
+
+.cancelbutton {
+  font-weight: bold;
+  color : red;
+}
+
+.newbutton {
+  font-weight: bold;
+  color : blue;
+}
+
