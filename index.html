@@ -80,6 +80,21 @@
 </tr>
 
 <tr>
+  <td class=label align=right valign=top><div id=BasicAdvancedLabel></div></td>
+  <td>
+    <input type=radio id=basicchoice name=BasicAdvancedChoice checked
+      onclick="PubSub.publish('basicmodechosen')">
+    <label for=basicchoice><span id=BasicChoiceLabel></span></label><br>
+    <input type=radio id=advancedchoice name=BasicAdvancedChoice
+      onclick="PubSub.publish('advancedmodechosen')">
+    <label for=toencode><span id=AdvancedChoiceLabel></span></label>
+  </td>
+</tr>
+
+<tr>
+  <td>&nbsp;</td>
+</tr>
+<tr class=trhideclass>
   <td class=label align=right valign=top>
     <div id=PKEncodingLabel></div>
   </td>
@@ -181,9 +196,6 @@
     <div id=PrivateKeyWIFData>
       <input id=PrivateKeyWIFField class=redtext
              type=text size=53 maxlength=53 />&nbsp;
-      <img src=images/paperwallet.svg width=25 height=25
-           style='vertical-align:top;'
-           onclick="PubSub.publish('ShowPaperWallet')" />
       <span class=units>(WIF chars)</span>
     </div>
   </td>
@@ -200,7 +212,7 @@
 <tr>
   <td>&nbsp;</td>
 </tr>
-<tr>
+<tr class=trhideclass>
   <td class="label" align=right>
     <div id="PublicKeyLabel"></div>
   </td>
@@ -209,7 +221,7 @@
   </td>
   <td class=units>(128 chars, 64 bytes)</td>
 </tr>
-<tr>
+<tr class=trhideclass>
   <td class="label" align=right>
     <div id="CompPublicKeyLabel"></div>
   </td>
@@ -227,8 +239,9 @@
   <td>
     <input id="EthAddrField"
            class=blat type=text size=42 maxlength=42 readonly></textarea>
+    &nbsp;
+    <span class=units>(40 chars, 20 bytes)</span>
   </td>
-  <td class=units>(40 chars, 20 bytes)</td>
 </tr>
 <tr>
   <td class="label" align=right>
@@ -237,11 +250,14 @@
   <td>
     <input id="BTCAddrField"
            class=blat type=text size=42 maxlength=42 readonly></textarea>
+    &nbsp;
+    <img src=images/paperwallet.svg width=25 height=25
+         style='vertical-align:top;'
+         onclick="PubSub.publish('ShowPaperWallet')" />
   </td>
-  <td class=units></td>
 </tr>
 
-<tr>
+<tr class=trhideclass>
   <td/>
   <td>
     <input type=image src=images/uparrow.svg width=50 height=50
@@ -250,7 +266,7 @@
            onclick="PubSub.publish('NoticeClicked')" />
   </td>
 </tr>
-<tr>
+<tr class=trhideclass>
   <td class="label" align=right>
     <div id="PubKeyXLabel"></div>
   </td>
@@ -259,7 +275,7 @@
   </td>
   <td class=units>(64 chars, 32 bytes)</td>
 </tr>
-<tr>
+<tr class=trhideclass>
   <td class="label" align=right>
     <div id="PubKeyYLabel"></div>
   </td>
@@ -271,7 +287,7 @@
 <tr>
   <td>&nbsp;</td>
 </tr>
-<tr>
+<tr class=trhideclass>
   <td colspan=3>
     <canvas id=xyplot width=900 height=900></canvas>
   </td>
@@ -444,6 +460,13 @@
     }
     return result
   }
+
+  PubSub.subscribe( "basicmodechosen", () => {
+    $( ".trhideclass" ).hide()
+  } )
+  PubSub.subscribe( "advancedmodechosen", () => {
+    $( ".trhideclass" ).show()
+  } )
 
   PubSub.subscribe( "toencodechosen", () => {
     encodeprivkey = true
@@ -749,6 +772,7 @@
     $( "#Main" ).show()
   } )
 
+  PubSub.publish( "basicmodechosen" )
   PubSub.publish( "hexchosen" )
   PubSub.publish( "BackToMain" )
 </script>

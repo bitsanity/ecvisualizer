@@ -3,8 +3,12 @@ var STRINGS = {};
 STRINGS["English"] = {
 
   CurveLabel:"Elliptic Curve:",
+
+  BasicAdvancedLabel:"Calculator Mode:",
+  BasicChoiceLabel:"Basic",
+  AdvancedChoiceLabel:"Advanced",
   PKEncodingLabel:"Show Private Key Values:",
-  PKChoiceLabel:"Specify Private Key as:",
+  PKChoiceLabel:"Private Key Format:",
 
   PrivateKeyLabel:"(hex):",
   PrivateKeyLabel2:"(uint[]):",
@@ -20,6 +24,9 @@ STRINGS["English"] = {
   BTCAddressLabel:"Bitcoin P2PKH Address",
   BTCWIFLabel:"Bitcoin WIF Value",
   EncodedWIFWarning:
+    "<b>WARNING:</b> This is your <b>unencrypted</b> private key. Keep it " +
+    "secret - anyone who scans it could take any Bitcoin at this address." +
+    "<p/>" +
     "<b>WARNING:</b> Do not import an <b>encoded</b> WIF value into any " +
     "wallet and expect to get the same Bitcoin address as if the WIF value " +
     "was <b>decoded</b>.",

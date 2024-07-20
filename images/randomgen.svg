@@ -50,42 +50,42 @@
      id="icomoon-ignore"
      transform="translate(0.22633129,-0.09953856)" />
   <path
-     style="fill:#ff0000"
+     style="fill:#000000;stroke-width:1"
      inkscape:connector-curvature="0"
-     d="m -0.26066871,28.136461 13.91599971,-13.916 0.754,0.754 -13.91599971,13.916 z"
+     d="M -0.2606687,28.09374 14.44378,13.389292 15.240499,14.186012 0.53605121,28.89046 Z"
      id="path904" />
   <path
-     style="fill:#800000"
+     style="fill:#ff0000"
      inkscape:connector-curvature="0"
      d="m 9.7193313,10.353461 h 4.2669997 v 1.067 H 9.7193313 Z"
      id="path906" />
   <path
-     style="fill:#00ffff"
+     style="fill:#ff0000"
      inkscape:connector-curvature="0"
      d="m 21.453331,10.353461 h 4.267 v 1.067 h -4.267 z"
      id="path908" />
   <path
-     style="fill:#0000ff"
+     style="fill:#ff0000"
      inkscape:connector-curvature="0"
      d="m 17.186331,14.620461 h 1.067 v 4.267 h -1.067 z"
      id="path910" />
   <path
-     style="fill:#ffcc00"
+     style="fill:#ff0000"
      inkscape:connector-curvature="0"
      d="m 17.186331,2.8874614 h 1.067 v 4.267 h -1.067 z"
      id="path912" />
   <path
-     style="fill:#71c837"
+     style="fill:#ff0000"
      inkscape:connector-curvature="0"
      d="m 23.737331,5.6174614 -3.017,3.017 -0.754,-0.754 3.017,-3.017 z"
      id="path914" />
   <path
-     style="fill:#800080"
+     style="fill:#ff0000"
      inkscape:connector-curvature="0"
      d="m 22.992331,16.942461 -3.017,-3.017 0.754,-0.754 3.017,3.017 z"
      id="path916" />
   <path
-     style="fill:#d45500"
+     style="fill:#ff0000"
      inkscape:connector-curvature="0"
      d="m 14.732331,8.6414614 -3.017,-3.017 0.754,-0.754 3.017,3.017 z"
      id="path918" />
@@ -98,4 +98,11 @@
      y="0.22677165"
      rx="0.625"
      ry="0.625" />
+  <ellipse
+     style="fill:#ffffff;fill-rule:evenodd;stroke:#ffff00;stroke-width:0.3023622;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path887"
+     cx="17.734695"
+     cy="10.865271"
+     rx="2.8348792"
+     ry="2.8794062" />
 </svg>

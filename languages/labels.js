@@ -7,6 +7,9 @@ var LABELS = (function() {
   function setLabels()
   {
     $( "#CurveLabel").html( STRINGS[LANG].CurveLabel );
+    $( "#BasicAdvancedLabel" ).html( STRINGS[LANG].BasicAdvancedLabel )
+    $( "#BasicChoiceLabel" ).html( STRINGS[LANG].BasicChoiceLabel )
+    $( "#AdvancedChoiceLabel" ).html( STRINGS[LANG].AdvancedChoiceLabel )
     $( "#PKEncodingLabel").html( STRINGS[LANG].PKEncodingLabel )
     $( "#PKChoiceLabel").html( STRINGS[LANG].PKChoiceLabel )
     $( "#PrivateKeyLabel").html( STRINGS[LANG].PrivateKeyLabel );
